@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>BSL-editor</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <link href="./decorations.css" rel="stylesheet" />
+    <link href="./tree/tree.css" rel="stylesheet" />
+    <link href="./tingle.css" rel="stylesheet" />
+    <script src="./tingle.js"></script>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0px;
+      }
+      #container {
+        height: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        window.addEventListener("message", (event) => {
+          if (event.data.type === "getText") {
+            const viewLines = document.querySelectorAll(".view-line");
+            let result = "";
+            viewLines.forEach((line) => {
+              line.childNodes[0].childNodes.forEach((innerSpan) => {
+                result += innerSpan.textContent; // Собираем текстовое содержимое из каждого span
+              });
+              result += "\r\n"; // Добавляем новую строку после каждой линии
+            });
+
+            console.log(result);
+
+            event.source.postMessage(
+              { type: event.data.action, text: result },
+              event.origin
+            ); // Отправляем результат обратно
+          } else if (event.data.type === "setCode") {
+            const codeText = event.data.codeText;
+            console.log(codeText);
+            // Получаем элемент консоли
+            const doc = document.querySelector(".view-lines");
+
+            doc.codeText = codeText;
+
+            doc.contentEditable = true;
+
+            // const viewLinesContainer = document.querySelector(".view-lines");
+            // viewLinesContainer.innerHTML = "";
+            // codeText.split("\r\n").forEach((lineText) => {
+            //   const lineDiv = document.createElement("div");
+            //   lineDiv.className = "view-line";
+            //   lineDiv.style.marginBottom = "50em";
+            //   lineDiv.contentEditable = true; // Добавляем возможность редактирования
+            //   const span = document.createElement("span");
+            //   span.textContent = lineText;
+            //   lineDiv.appendChild(span);
+            //   viewLinesContainer.appendChild(lineDiv);
+            // });
+          }
+        });
+      });
+    </script>
+    <div id="container"></div>
+    <div id="display">
+      <div id="display-header">
+        <div id="display-title"></div>
+        <div id="display-close"></div>
+      </div>
+      <div id="variables-display">
+        <div id="variables-tree"></div>
+      </div>
+    </div>
+    <button id="event-button"></button>
+
+    <script>
+      function getCode() {
+        return "";
+      }
+    </script>
+    <script src="./vs/loader.js"></script>
+    <script src="./parsers.js"></script>
+    <script src="./finder.js"></script>
+    <script src="./bsl_helper.js"></script>
+    <script src="./init.js"></script>
+    <script src="./tree/tree.js"></script>
+  </body>
+</html>
